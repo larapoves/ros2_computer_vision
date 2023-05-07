@@ -56,7 +56,6 @@ class PCLSubscriber : public rclcpp::Node
 
     void topic_callback_3d(const sensor_msgs::msg::PointCloud2::SharedPtr msg) const
     {    
-      
       // Convert to PCL data type
       pcl::PointCloud<pcl::PointXYZRGB> point_cloud;
       pcl::fromROSMsg(*msg, point_cloud);     
@@ -77,9 +76,6 @@ class PCLSubscriber : public rclcpp::Node
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr publisher_3d_;
 };
 
-/**
-  TO-DO
-*/
 pcl::PointCloud<pcl::PointXYZRGB> pcl_processing(const pcl::PointCloud<pcl::PointXYZRGB> in_pointcloud)
 {
   // Create output pointcloud
@@ -90,7 +86,6 @@ pcl::PointCloud<pcl::PointXYZRGB> pcl_processing(const pcl::PointCloud<pcl::Poin
 
   return out_pointcloud;
 }
-
 
 int main(int argc, char * argv[])
 {
