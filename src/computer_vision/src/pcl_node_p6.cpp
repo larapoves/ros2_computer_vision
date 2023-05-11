@@ -51,7 +51,7 @@ cv::Mat T = cv::Mat::zeros(3, 4, CV_32F); // Extrinsic parameters
 pcl::PointCloud<pcl::PointXYZRGB> pcl_processing(const pcl::PointCloud<pcl::PointXYZRGB> in_pointcloud);
 pcl::PointCloud<pcl::PointXYZRGB> color_filter(const pcl::PointCloud<pcl::PointXYZRGB> cloud);
 pcl::PointCloud<pcl::PointXYZRGB> draw_square(pcl::PointCloud<pcl::PointXYZRGB> cloud, const cv::Scalar color, const float x, const float y, const float z);
-pcl::PointCloud<pcl::PointXYZRGB> detect_balls(const pcl::PointCloud<pcl::PointXYZRGB> cloud_balls, pcl::PointCloud<pcl::PointXYZRGB> cloud);
+pcl::PointCloud<pcl::PointXYZRGB> detect_balls(pcl::PointCloud<pcl::PointXYZRGB> cloud);
 pcl::PointCloud<pcl::PointXYZRGB> distance(pcl::PointCloud<pcl::PointXYZRGB> cloud);
 
 class PCLSubscriber : public rclcpp::Node
@@ -203,8 +203,9 @@ pcl::PointCloud<pcl::PointXYZRGB> draw_square(pcl::PointCloud<pcl::PointXYZRGB> 
   return cloud;
 }
 
-pcl::PointCloud<pcl::PointXYZRGB> detect_balls(const pcl::PointCloud<pcl::PointXYZRGB> cloud_balls, pcl::PointCloud<pcl::PointXYZRGB> cloud)
+pcl::PointCloud<pcl::PointXYZRGB> detect_balls(pcl::PointCloud<pcl::PointXYZRGB> cloud)
 {
+  pcl::PointCloud<pcl::PointXYZRGB> copy;
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_p (new pcl::PointCloud<pcl::PointXYZRGB>), cloud_f (new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
@@ -212,7 +213,10 @@ pcl::PointCloud<pcl::PointXYZRGB> detect_balls(const pcl::PointCloud<pcl::PointX
   pcl::SACSegmentation<pcl::PointXYZRGB> seg; // Segmentation object
   pcl::ExtractIndices<pcl::PointXYZRGB> extract; // Filtering object
 
-  *cloud_ptr = cloud_balls;
+  // Copy the point cloud
+  pcl::copyPointCloud(cloud, copy);
+  *cloud_ptr = copy;
+  
   if(cloud_ptr->size() <= MIN_POINTS) {
     std::cerr << "There isn't any pink ball." << std::endl;
     return cloud;
@@ -276,14 +280,14 @@ pcl::PointCloud<pcl::PointXYZRGB> distance(pcl::PointCloud<pcl::PointXYZRGB> clo
 pcl::PointCloud<pcl::PointXYZRGB> pcl_processing(const pcl::PointCloud<pcl::PointXYZRGB> in_pointcloud)
 {
   // Create output pointcloud
-  pcl::PointCloud<pcl::PointXYZRGB> out_pointcloud, balls_pointcloud;
+  pcl::PointCloud<pcl::PointXYZRGB> out_pointcloud;
 
   // Processing
   out_pointcloud = in_pointcloud;
 
   // Color filter pink
-  balls_pointcloud = color_filter(out_pointcloud);
-  out_pointcloud = detect_balls(balls_pointcloud, out_pointcloud);
+  out_pointcloud = color_filter(out_pointcloud);
+  out_pointcloud = detect_balls(out_pointcloud);
   out_pointcloud = distance(out_pointcloud);
 
   return out_pointcloud;
