@@ -85,6 +85,7 @@ class ComputerVisionSubscriber : public rclcpp::Node
 cv::Mat get_mask(const cv::Mat img, const cv::Scalar lower, const cv::Scalar upper)
 {
   cv::Mat mask;
+  // a veces e mejor en hsv
 
   cv::inRange(img, lower, upper, mask);
 

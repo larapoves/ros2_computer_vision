@@ -14,6 +14,19 @@
 # limitations under the License.
 */
 
+// trasformaciones elementales
+  // esclado [x y 1]t = [sx 0 0; 0 sy 0; 0 0 1] * [i j 1]t
+  // translación [x y 1]t = [1 0 0; 0 1 0; tx ty 1] * [i j 1]t
+  // rotacion [x y 1]t = [cos -sen 0; sen cos 0; 0 0 1] * [i j 1]t
+  // inclinación [x y 1]t = [1 teta 0; teta 1 0; 0 0 1] * [i j 1]t
+
+// interpolación vecinos -> hacer más grande poniendo el color del pixel original a los de al lado -> efecto cuadriculado
+
+// suavizado de vecinos como una convalución
+// filtro de media -> 1/9 [matriz de 1]
+
+// El histograma es la representación gráfica de las frecuencias relativas con las que aparecen los distintos colores en una determinada imagen
+
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
@@ -211,7 +224,7 @@ void show_histograms(const std::vector<cv::Mat> imgs)
 
     // Put text
     if(i != 0) {
-      text[i - 1] += std::to_string(cv::compareHist(histograms[0], histograms[i], CV_COMP_CORREL));
+      text[i - 1] += std::to_string(cv::compareHist(histograms[0], histograms[i], CV_COMP_CORREL)); // CV_COMP_CHISQR, CV_COMP_INTERSECT, CV_COMP_BHATTACHARYYA
       cv::putText(hist_img, text[i - 1], cv::Point(10, h), cv::FONT_HERSHEY_SIMPLEX, 0.45, colors[i]); 
       h += 20;
     }
@@ -221,6 +234,9 @@ void show_histograms(const std::vector<cv::Mat> imgs)
   show = true;
 }
 
+// expandir -> distribuir las frecuencias a lo largo de todo el histogrma -> 0 255
+// cmax y cmin son los valores deseados de la compresión
+// rmxa y rmin máximo y mínimo nivel de gris de la imagen
 cv::Mat stretch_shrink(const cv::Mat img, const bool shrink)
 {
   // Find maximum and minimum values of the filtered image

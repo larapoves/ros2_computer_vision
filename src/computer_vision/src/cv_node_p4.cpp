@@ -111,14 +111,14 @@ cv::Mat lines(const cv::Mat img)
   cv::GaussianBlur(green_img, green_img, cv::Size(3, 3), 0);
 
   // Edge detection
-  cv::Canny(green_img, green_img, 75, 150, 3); 
+  cv::Canny(green_img, green_img, 75, 150, 3); // 3 es tamaño kernel
 
   // Get Hough accumulator value
   int value = cv::getTrackbarPos("Hough accumulator", "P4");
 
   // Standard Hough Line Transform
   std::vector<cv::Vec2f> lines; 
-  cv::HoughLines(green_img, lines, 1, CV_PI / 180, value, 0, 0); 
+  cv::HoughLines(green_img, lines, 1, CV_PI / 180, value, 0, 0); // value -> umbral a partir del cual se considera detectada
 
   // Copy original image
   cv::Mat out_img;
@@ -170,6 +170,9 @@ cv::Mat balls(const cv::Mat img)
 
   std::vector<cv::Vec3f> circles;
   cv::HoughCircles(binary_img, circles, cv::HOUGH_GRADIENT, 1, binary_img.rows / 16, 50, 15, 1, 250);
+  // umbral de dtección, un valor más pequeño permite detectar circulos más facilmente
+  // umbral acumulativo, a más pequeño detección más estricta
+  // radio mínimo y máximo del circulo
 
   // Copy original image
   cv::Mat out_img;
@@ -238,7 +241,11 @@ cv::Mat contours(const cv::Mat img)
 
   // Binarize
   cv::Mat binary_img = binarize(filter_img);
-  cv::GaussianBlur(binary_img, binary_img, cv::Size(3, 3), 0); // Join the line and the ball when they are on the limit
+
+  // In order to detect them better
+  cv::Mat element = getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3)); // Structural element
+  cv::morphologyEx(binary_img, binary_img, cv::MORPH_OPEN, element); // Openning
+  cv::GaussianBlur(binary_img, binary_img, cv::Size(5, 5), 0); // Join the line and the balls
 
   // Add a black edge to the image
   int border = 2;

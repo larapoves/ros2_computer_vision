@@ -28,6 +28,26 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+// filtro de paso alto -> bordes
+// filtro de paso bajo -> suaviza -> fondo negro, círculo blanco
+
+// convlolución -> filter2D(imagen, imagen_convolucionada, imagen.depth(), kernel);
+  // Kernel es la matriz h, matriz de convolución
+    // Masks
+      /*
+      Mat M1 = (Mat_<char>(3,3) <<
+      1, 1, 1,
+      1, 1, 1,
+      1, 1, 1);
+      */
+  // imagen es la imagen original
+  // imagen_conlolución es donde guardamos el resultado
+
+// transformaciones de vecindad
+  // el pixel tiene el valor promedio de los 8 pixeles que tiene alrededor
+  // se pueden aplicar máscaras para decidir el peso de cada uno
+  // se hace como la convolución
+
 enum {
   MIN_FILTER = 50,
   MAX_FILTER = 100,
@@ -136,7 +156,7 @@ cv::Mat fftShift(const cv::Mat &magI)
   return magI_copy;
 }
 
-cv::Mat spectrum(const cv::Mat &complexI) 
+cv::Mat spectrum(const cv::Mat &complexI) // sirve para visualizar la transformada de fourier
 {
   cv::Mat complexImg = complexI.clone();
 
@@ -262,7 +282,7 @@ cv::Mat AND(const cv::Mat image)
   }
 
   cv::Mat and_img;
-  cv::bitwise_and(threshols_op4, threshols_op3, and_img);
+  cv::bitwise_and(threshols_op4, threshols_op3, and_img); // transformción lógica, = para or y xor
 
   return and_img;
 }
@@ -302,7 +322,7 @@ cv::Mat image_processing(const cv::Mat in_image)
       out_image = spectrum(out_image);
       break;
     case '3':
-      out_image = frecuenciesHV(out_image, true, false);
+      out_image = frecuenciesHV(out_image, true, false); // Keep filter
       break;
     case '4':
       out_image = frecuenciesHV(out_image, false, false);
