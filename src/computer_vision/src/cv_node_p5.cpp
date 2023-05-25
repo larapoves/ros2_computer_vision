@@ -225,7 +225,7 @@ cv::Mat enclose_distance(cv::Mat img)
     cv::rectangle(dist_img, cv::Point(0, 0), cv::Point(p1.x, dist_img.rows), cv::Scalar(0, 0, 0), -1, cv::LINE_8);
     cv::rectangle(dist_img, cv::Point(p2.x, 0), cv::Point(dist_img.cols, dist_img.rows), cv::Scalar(0, 0, 0), -1, cv::LINE_8);
 
-    // Points further than the maximun distance
+    // Keep points further than the maximun distance
     cv::rectangle(dist_img, cv::Point(0, p1.y), cv::Point(dist_img.cols, dist_img.rows), cv::Scalar(0, 0, 0), -1, cv::LINE_8);
   }
 
@@ -320,7 +320,7 @@ void draw_points(cv::Mat img, const cv::Mat depth_img)
     cv::circle(img, cv::Point(points[i].x, points[i].y), 5, cv::Scalar(255, 255, 255), -1);
 
     // Calculate 3D coordinates
-    z = depth_img.at<float>(points[i].y, points[i].x);
+    z = depth_img.at<float>(points[i].y, points[i].x); // filas, columnas
     x = (points[i].x - K.at<double>(0, 2)) * z / K.at<double>(0, 0);
     y = (points[i].y - K.at<double>(1, 2)) * z / K.at<double>(1, 1);
 
@@ -349,7 +349,7 @@ cv::Mat image_processing(const cv::Mat in_image, const cv::Mat depth_image)
       break;
     case 2:
       depth_image.convertTo(out_image, CV_8U);
-      cv::normalize(out_image, out_image, 0, 255, cv::NORM_MINMAX);
+      cv::normalize(out_image, out_image, 0, 255, cv::NORM_MINMAX); // realazar
       draw_points(out_image, depth_image);
   }
 

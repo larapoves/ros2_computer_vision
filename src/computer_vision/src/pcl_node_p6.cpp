@@ -244,7 +244,7 @@ pcl::PointCloud<pcl::PointXYZRGB> detect_balls(pcl::PointCloud<pcl::PointXYZRGB>
     // Extract the inliers
     extract.setInputCloud(cloud_ptr);
     extract.setIndices(inliers);
-    extract.setNegative(false);
+    extract.setNegative(false); // si quiero borrar las poner true, en vez de cloud_p cloud_ptr y borrar las tres lineas de abajo
     extract.filter(*cloud_p);
 
     // Create the filtering object
@@ -252,6 +252,24 @@ pcl::PointCloud<pcl::PointXYZRGB> detect_balls(pcl::PointCloud<pcl::PointXYZRGB>
     extract.filter(*cloud_f);
     cloud_ptr.swap(cloud_f);
   }
+
+  /*
+  pcl::PointCloud<pcl::PointXYZ>::Ptr sphere_cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  for (float theta = 0.0; theta <= 2 * M_PI; theta += 0.01) {
+    for (float phi = 0.0; phi <= M_PI; phi += 0.01) {
+      pcl::PointXYZ point;
+      point.x = center.x + radius * sin(phi) * cos(theta);
+      point.y = center.y + radius * sin(phi) * sin(theta);
+      point.z = center.z + radius * cos(phi);
+      sphere_cloud->push_back(point);
+    }
+  }
+
+  bool isPointInsideSphere(const pcl::PointXYZ& point, const pcl::PointXYZ& center, float radius) {
+    float distance = sqrt(pow(point.x - center.x, 2) + pow(point.y - center.y, 2) + pow(point.z - center.z, 2));
+    return distance <= radius;
+  }
+  */
 
   return cloud;
 }
